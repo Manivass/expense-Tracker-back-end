@@ -6,6 +6,7 @@ const expenseSchema = new mongoose.Schema({
   },
   amount: {
     type: Number,
+    required: true,
     validate: function (value) {
       if (value <= 0) {
         throw new Error("The expense amount must be greater than 0");
@@ -14,6 +15,7 @@ const expenseSchema = new mongoose.Schema({
   },
   category: {
     type: [String],
+    required: true,
     enum: {
       values: ["food", "dress", "travel", "other expense"],
       message: `{VALUE} is not valid category`,

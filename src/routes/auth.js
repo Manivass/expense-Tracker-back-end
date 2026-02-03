@@ -4,6 +4,7 @@ const { validateSignUp } = require("../utils/validateSignUp");
 const authRouter = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const userAuth = require("../middleware/userAuth");
 authRouter.post("/signUp", async (req, res) => {
   try {
     validateSignUp(req);
@@ -52,7 +53,7 @@ authRouter.post("/login", async (req, res) => {
   }
 });
 
-authRouter.post("/logout", async (req, res) => {
+authRouter.post("/logout", userAuth, async (req, res) => {
   res
     .cookie("token", "", {
       expires: new Date(0),

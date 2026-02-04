@@ -45,4 +45,16 @@ expenseRouter.get("/expense/financialOverView", userAuth, async (req, res) => {
   }
 });
 
+expenseRouter.get("/expense/list", userAuth, async (req, res) => {
+  try {
+    const loggedUser = req.user;
+    const userExpense = await Expense.find({ userId: loggedUser._id }).select(
+      "amount category note date",
+    );
+    res.json({ expense: userExpense });
+  } catch (err) {
+    res.status(401).send(err.message);
+  }
+});
+
 module.exports = { expenseRouter };

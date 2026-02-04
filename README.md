@@ -1,6 +1,6 @@
 ## Creating Expense Tracker Backend
 
-- install express and nodemon 
+- install express and nodemon
 - connect DB to server , then connect
 - create userSchema - firstName , lastName , emailId , password
 - install bcrypt
@@ -12,3 +12,4 @@
 - /expense/add - add the expense
 - /user/startingAmount - add the starting amount
 - /expense/financialOverView - over View of the balance
+- /expense/list - to see the expense list

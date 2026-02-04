@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const expenseSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
+    required: true,
   },
   amount: {
     type: Number,
@@ -14,7 +15,7 @@ const expenseSchema = new mongoose.Schema({
     },
   },
   category: {
-    type: [String],
+    type: String,
     required: true,
     enum: {
       values: ["food", "dress", "travel", "other expense"],

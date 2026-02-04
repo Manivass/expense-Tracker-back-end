@@ -8,4 +8,5 @@
 - signUp API - validate and sanitize the api then store into DB and get the cookie
 - Login API - validate the email Id and Password ang get the cookie
 - logout API - clear the cookie
-- expensne schema - userId , amount , category , date , note
+- expense schema - userId , amount , category , date , note
+- /expense/add - add the expense

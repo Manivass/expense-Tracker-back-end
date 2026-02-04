@@ -33,8 +33,9 @@ const userSchema = new mongoose.Schema(
     },
     startingAmount: {
       type: Number,
+      default: 0,
       validate: function (value) {
-        if (value <= 0) {
+        if (value < 0) {
           throw new Error("the startingAmout must be greater then 0");
         }
       },

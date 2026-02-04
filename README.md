@@ -10,3 +10,4 @@
 - logout API - clear the cookie
 - expense schema - userId , amount , category , date , note
 - /expense/add - add the expense
+- /user/startingAmount - add the starting amount

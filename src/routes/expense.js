@@ -11,14 +11,34 @@ expenseRouter.post("/expense/add", userAuth, async (req, res) => {
     validateAndSanitizeExpense(req);
     const { amount, note, category } = req.body;
     const expense = new Expense({
-      userId: amount,
+      userId,
+      amount,
       note,
       category,
     });
     await expense.save();
-    res.send(201).json({
+    res.status(200).json({
       message: "expense successfully added",
       data: expense,
+    });
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
+expenseRouter.get("/expense/financialOverView", userAuth, async (req, res) => {
+  try {
+    const loggedUser = req.user;
+    let startingAmount = loggedUser.startingAmount;
+    const expenseData = await Expense.find({ userId: loggedUser._id });
+    let totalExpense = 0;
+    expenseData.forEach((exp) => {
+      totalExpense += exp.amount;
+    });
+    res.json({
+      startingAmount,
+      totalExpense,
+      "Remaining Amount": startingAmount - totalExpense,
     });
   } catch (err) {
     res.status(400).send(err.message);

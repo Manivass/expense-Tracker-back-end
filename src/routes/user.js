@@ -12,6 +12,10 @@ userRouter.patch("/user/startingAmount", userAuth, async (req, res) => {
     }
     loggedUser.startingAmount = startingAmount;
     await loggedUser.save();
+    res.json({
+      message: `startingAmount : ${startingAmount} is successfully added`,
+      data: loggedUser,
+    });
   } catch (err) {
     res.status(400).send(err.message);
   }

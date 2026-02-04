@@ -11,3 +11,4 @@
 - expense schema - userId , amount , category , date , note
 - /expense/add - add the expense
 - /user/startingAmount - add the starting amount
+- /expense/financialOverView - over View of the balance

@@ -61,4 +61,27 @@ expenseRouter.get("/expense/list", userAuth, async (req, res) => {
   }
 });
 
+expenseRouter.post(
+  "/expense/deleteExpense/:expenseId",
+  userAuth,
+  async (req, res) => {
+    try {
+      const loggedUser = req.user;
+      const expenseId = req.params.expenseId;
+      const deleteExpense = await Expense.findOneAndDelete({
+        $and: [{ userId: loggedUser._id }, { _id: expenseId }],
+      });
+      if (!deleteExpense) {
+        return res.status(404).send("no expense found");
+      }
+      res.json({
+        message: "successfully deleted",
+        deleteExpense,
+      });
+    } catch (err) {
+      res.status(400).send(err.message);
+    }
+  },
+);
+
 module.exports = { expenseRouter };

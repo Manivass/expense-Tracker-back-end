@@ -13,3 +13,4 @@
 - /user/startingAmount - add the starting amount
 - /expense/financialOverView - over View of the balance
 - /expense/list - to see the expense list
+- added pagination in the expense/list

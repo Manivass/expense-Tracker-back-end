@@ -15,3 +15,4 @@
 - /expense/list - to see the expense list
 - added pagination in the expense/list
 - /expense/deleteExpense/expenseId delete the expense 
+- expense/edit/expenseId edit the expense

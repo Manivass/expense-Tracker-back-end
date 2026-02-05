@@ -1,3 +1,5 @@
 const allowedCategory = ["food", "dress", "travel", "otherExpense"];
 
-module.exports = { allowedCategory };
+const allowedFieldsExpenseSchema = ["amount", "note", "category"];
+
+module.exports = { allowedCategory, allowedFieldsExpenseSchema };

@@ -3,6 +3,10 @@ const userAuth = require("../middleware/userAuth");
 const Expense = require("../models/expense");
 const User = require("../models/user");
 const { validateAndSanitizeExpense } = require("../utils/validate");
+const {
+  allowedCategory,
+  allowedFieldsExpenseSchema,
+} = require("../utils/constant");
 const expenseRouter = express.Router();
 
 expenseRouter.post("/expense/add", userAuth, async (req, res) => {
@@ -61,6 +65,7 @@ expenseRouter.get("/expense/list", userAuth, async (req, res) => {
   }
 });
 
+//expense / delete
 expenseRouter.post(
   "/expense/deleteExpense/:expenseId",
   userAuth,
@@ -83,5 +88,34 @@ expenseRouter.post(
     }
   },
 );
+
+expenseRouter.patch("/expense/edit/:expenseId", userAuth, async (req, res) => {
+  try {
+    const loggedUser = req.user;
+    const expenseId = req.params.expenseId;
+    const expenseAvailable = await Expense.findOne({
+      $and: [{ userId: loggedUser._id }, { _id: expenseId }],
+    });
+
+    if (!expenseAvailable) {
+      return res.status(404).send("no expense found");
+    }
+
+    validateAndSanitizeExpense(req);
+
+    Object.keys(req.body).forEach((key) => {
+      if (allowedFieldsExpenseSchema.includes(key))
+        expenseAvailable[key] = req.body[key];
+    });
+
+    await expenseAvailable.save();
+
+    res.json({
+      message: `${loggedUser.firstName} your expense has been successfully changed`,
+    });
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
 
 module.exports = { expenseRouter };

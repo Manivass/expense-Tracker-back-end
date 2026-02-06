@@ -30,19 +30,36 @@ expenseRouter.post("/expense/add", userAuth, async (req, res) => {
   }
 });
 
-expenseRouter.get("/expense/financialOverView", userAuth, async (req, res) => {
+expenseRouter.get("/expense/summary", userAuth, async (req, res) => {
   try {
     const loggedUser = req.user;
     let startingAmount = loggedUser.startingAmount;
     const expenseData = await Expense.find({ userId: loggedUser._id });
     let totalExpense = 0;
-    expenseData.forEach((exp) => {
-      totalExpense += exp.amount;
-    });
+    const result = await Expense.aggregate([
+      { $match: { userId: loggedUser._id } },
+      {
+        $group: {
+          _id: "$category",
+          Amount: { $sum: "$amount" },
+        },
+      },
+      {
+        $project: {
+          category: "$_id",
+          Amount: 1,
+          _id: 0,
+        },
+      },
+    ]);
+    if (result.length === 0) {
+      return res.status(200).send("No categories found");
+    }
     res.json({
       startingAmount,
       totalExpense,
       "Remaining Amount": startingAmount - totalExpense,
+      result,
     });
   } catch (err) {
     res.status(400).send(err.message);

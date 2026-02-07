@@ -135,7 +135,7 @@ expenseRouter.patch("/expense/edit/:expenseId", userAuth, async (req, res) => {
   }
 });
 
-expenseRouter.get("/expense/summary/monthly", userAuth, async (req, res) => {
+expenseRouter.get("/expense/summary/overall", userAuth, async (req, res) => {
   try {
     const loggedUser = req.user;
     const monthlyExpense = await Expense.aggregate([
@@ -173,6 +173,46 @@ expenseRouter.get("/expense/summary/monthly", userAuth, async (req, res) => {
   }
 });
 
-
+expenseRouter.get("/expense/monthly-category", userAuth, async (req, res) => {
+  try {
+    const loggedUser = req.user;
+    const year = req.query.year;
+    const month = req.query.month;
+    if (!year || !month) {
+      return res.status(200).send("pls give the year and month");
+    }
+    const monthlyCategory = await Expense.aggregate([
+      {
+        $match: {
+          userId: loggedUser._id,
+          date: {
+            $gte: new Date(year, month - 1, 1),
+            $lt: new Date(year, month, 1),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$category",
+          totalAmount: { $sum: "$amount" },
+        },
+      },
+      {
+        $project: {
+          category: "$_id",
+          totalAmount: 1,
+          _id: 0,
+        },
+      },
+      { $sort: { totalAmount: 1 } },
+    ]);
+    if (monthlyCategory.length === 0) {
+      return res.status(200).send("not found");
+    }
+    res.json({ monthlyCategory });
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
 
 module.exports = { expenseRouter };

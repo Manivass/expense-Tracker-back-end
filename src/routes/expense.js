@@ -135,4 +135,44 @@ expenseRouter.patch("/expense/edit/:expenseId", userAuth, async (req, res) => {
   }
 });
 
+expenseRouter.get("/expense/summary/monthly", userAuth, async (req, res) => {
+  try {
+    const loggedUser = req.user;
+    const monthlyExpense = await Expense.aggregate([
+      { $match: { userId: loggedUser._id } },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$date" },
+            month: { $month: "$date" },
+          },
+          totalAmount: { $sum: "$amount" },
+        },
+      },
+      {
+        $project: {
+          year: "$_id.year",
+          month: "$_id.month",
+          totalAmount: 1,
+          _id: 0,
+        },
+      },
+      {
+        $sort: {
+          year: 1,
+          month: 1,
+        },
+      },
+    ]);
+    if (monthlyExpense.length === 0) {
+      return res.status(200).send("no data found");
+    }
+    res.send(monthlyExpense);
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
+
+
 module.exports = { expenseRouter };

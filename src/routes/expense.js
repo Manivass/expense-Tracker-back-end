@@ -179,8 +179,10 @@ expenseRouter.get("/expense/monthly-category", userAuth, async (req, res) => {
     const year = req.query.year;
     const month = req.query.month;
     if (!year || !month) {
-      return res.status(200).send("pls give the year and month");
+      return res.status(400).send("pls give the year and month");
     }
+    if (month < 1 || month > 12)
+      return res.status(400).send("pls give the valid month");
     const monthlyCategory = await Expense.aggregate([
       {
         $match: {
@@ -204,7 +206,7 @@ expenseRouter.get("/expense/monthly-category", userAuth, async (req, res) => {
           _id: 0,
         },
       },
-      { $sort: { totalAmount: 1 } },
+      { $sort: { totalAmount: -1 } },
     ]);
     if (monthlyCategory.length === 0) {
       return res.status(200).send("not found");
@@ -214,5 +216,7 @@ expenseRouter.get("/expense/monthly-category", userAuth, async (req, res) => {
     res.status(400).send(err.message);
   }
 });
+
+
 
 module.exports = { expenseRouter };

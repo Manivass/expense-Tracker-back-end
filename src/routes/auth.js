@@ -5,6 +5,8 @@ const authRouter = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const userAuth = require("../middleware/userAuth");
+const validator = require("validator");
+
 authRouter.post("/signUp", async (req, res) => {
   try {
     validateSignUp(req);
@@ -59,6 +61,33 @@ authRouter.post("/logout", userAuth, async (req, res) => {
       expires: new Date(0),
     })
     .send("logout successfully");
+});
+
+authRouter.post("/auth/change-password", userAuth, async (req, res) => {
+  try {
+    const loggedUser = req.user;
+    const oldPassword = req.body.oldPassword;
+    const newPassword = req.body.newPassword;
+    const isPasswordCrt = await bcrypt.compare(
+      oldPassword,
+      loggedUser.password,
+    );
+    if (!isPasswordCrt) {
+      return res.status(400).send("your old password is wrong");
+    }
+    if (oldPassword === newPassword) {
+      return res.status(400).send("new password must be different");
+    }
+    if (!validator.isStrongPassword(newPassword)) {
+      return res.status(400).send("your new password is not strong");
+    }
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+    loggedUser.password = passwordHash;
+    await loggedUser.save();
+    res.json({ message: "password successfully changed" });
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
 });
 
 module.exports = { authRouter };
